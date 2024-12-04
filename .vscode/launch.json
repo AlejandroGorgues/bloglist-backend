@@ -7,13 +7,29 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "Testing via npm",
+            "name": "Start testing",
             "skipFiles": [
                 "<node_internals>/**"
             ],
             "runtimeArgs": [
                 "run",
-                "test"
+                "test",
+                "--test-concurrency=1",
+                "tests/main.test.js"
+            ],
+            "runtimeExecutable": "npm",
+            "program": "${workspaceFolder}/tests/blogs.test.js"
+        },
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "Start dev",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "runtimeArgs": [
+                "run",
+                "dev",
             ],
             "runtimeExecutable": "npm",
             "program": "${workspaceFolder}/tests/blogs.test.js"
