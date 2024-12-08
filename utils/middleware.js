@@ -20,7 +20,7 @@ const errorHandler = (error, request, response, next) => {
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'malformatted id' })
   } else if (error.name === 'ValidationError') {
-    
+
     return response.status(400).json({ error: error.message })
   } else if (error.name ===  'JsonWebTokenError') {
     return response.status(401).json({ error: 'token invalid' })
@@ -34,7 +34,7 @@ const errorHandler = (error, request, response, next) => {
   next(error)
 }
 
-const userExtractor = async (request, response, next) =>{
+const userExtractor = async (request, response, next) => {
   const authorization = request.get('authorization')
   if (authorization && authorization.startsWith('Bearer ')) {
     const token = authorization.replace('Bearer ', '')
@@ -47,8 +47,8 @@ const userExtractor = async (request, response, next) =>{
   }else if(!authorization){
     return response.status(401).json({ error: 'no token' })
   }
-  
-  
+
+
   next()
 }
 

@@ -12,7 +12,7 @@ let token = ''
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  
+
   const response = await api.post('/api/login').send({ username: 'root', password: 'sekret' })
   token = JSON.parse(response.text).token
 
@@ -30,39 +30,39 @@ test('dummy returns one', () => {
 })
 
 describe('total likes', () => {
-    test('of empty list is zero', () => {
-        const result = listHelper.totalLikes([])
-        assert.strictEqual(result, 0)
-      })
-    
-    test('when list has only one blog, equals the likes of that', () => {
-      const result = listHelper.totalLikes([helper.initialBlogs[0]])
-      assert.strictEqual(result, helper.initialBlogs[0].likes)
-    })
+  test('of empty list is zero', () => {
+    const result = listHelper.totalLikes([])
+    assert.strictEqual(result, 0)
+  })
+
+  test('when list has only one blog, equals the likes of that', () => {
+    const result = listHelper.totalLikes([helper.initialBlogs[0]])
+    assert.strictEqual(result, helper.initialBlogs[0].likes)
+  })
 })
 
 
 
 test('of a bigger list is calculated right', () => {
 
-    const result = listHelper.totalLikes(helper.initialBlogs)
-    assert.strictEqual(result, 36)
+  const result = listHelper.totalLikes(helper.initialBlogs)
+  assert.strictEqual(result, 36)
 })
 
 test('of author with the highest number of blogs', () => {
-    const result = listHelper.mostBlogs(helper.initialBlogs)
-    assert.deepStrictEqual(result, {
-        author: "Robert C. Martin",
-        blogs: 3
-    })
+  const result = listHelper.mostBlogs(helper.initialBlogs)
+  assert.deepStrictEqual(result, {
+    author: 'Robert C. Martin',
+    blogs: 3
+  })
 })
 
 test('of author with most likes', () => {
-    const result = listHelper.mostLikes(helper.initialBlogs)
-    assert.deepStrictEqual(result, {
-        author: "Edsger W. Dijkstra",
-        likes: 17
-      })
+  const result = listHelper.mostLikes(helper.initialBlogs)
+  assert.deepStrictEqual(result, {
+    author: 'Edsger W. Dijkstra',
+    likes: 17
+  })
 })
 
 test('blogs are returned as json', async () => {
@@ -75,8 +75,8 @@ test('blogs are returned as json', async () => {
 
 test('all blogs are returned', async () => {
   const response = await api
-                          .get('/api/blogs')
-                          .set('Authorization', `Bearer ${token}`)
+    .get('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
 
   assert.strictEqual(response.body.length, helper.initialBlogs.length)
 })
@@ -84,17 +84,17 @@ test('all blogs are returned', async () => {
 test(' the id of each blog is named _id from mongodb', async () => {
   const blogsAtStart = await helper.blogsInDb()
   const response = await api
-                        .get('/api/blogs')
-                        .set('Authorization', `Bearer ${token}`)
+    .get('/api/blogs')
+    .set('Authorization', `Bearer ${token}`)
 
 
   assert.strictEqual(Object.keys(response.body[0]).at(-1), Object.keys(blogsAtStart[0]).at(-1))
 })
 test('a valid blog with no token cannot be added ', async () => {
   const newBlog = {
-    title: "Type random22222",
-    author: "Author random4444444",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html",
+    title: 'Type random22222',
+    author: 'Author random4444444',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html',
     likes: 23,
   }
 
@@ -106,9 +106,9 @@ test('a valid blog with no token cannot be added ', async () => {
 
 test('a valid blog can be added ', async () => {
   const newBlog = {
-    title: "Type random",
-    author: "Author random",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html",
+    title: 'Type random',
+    author: 'Author random',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html',
     likes: 14,
   }
 
@@ -130,9 +130,9 @@ test('a valid blog can be added ', async () => {
 test('a valid blog with no user cannot be added ', async () => {
 
   const newBlog = {
-    title: "Type random",
-    author: "Author random",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html",
+    title: 'Type random',
+    author: 'Author random',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html',
     likes: 14,
   }
 
@@ -154,12 +154,12 @@ test('a valid blog with no user cannot be added ', async () => {
 
 test('a blog with no likes is set to 0 ', async () => {
   const newBlog = {
-    title: "Type random",
-    author: "Author random",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html",
+    title: 'Type random',
+    author: 'Author random',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html',
   }
 
-  if(newBlog["likes"]=== undefined){
+  if(newBlog['likes']=== undefined){
     newBlog.likes = 0
   }
 
@@ -179,7 +179,7 @@ test('a blog with no likes is set to 0 ', async () => {
 
 test('a blog with no title or url is not added ', async () => {
   const newBlog = {
-    author: "author",
+    author: 'author',
     likes: 4,
   }
 
@@ -217,7 +217,7 @@ describe('updating of a blog', () => {
     const blogsAtStart = await helper.blogsInDb()
     const blogToUpdate = blogsAtStart[0]
 
-    blogToUpdate.likes += 1 
+    blogToUpdate.likes += 1
     await api
       .put(`/api/blogs/${blogToUpdate.id}`)
       .set('Authorization', `Bearer ${token}`)
