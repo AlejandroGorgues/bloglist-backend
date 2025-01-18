@@ -9,6 +9,8 @@ const helper = require('./test_helper')
 const app = require('../app')
 
 const api = supertest(app)
+let token = ''
+
 
 describe('when there is initially one user in db', () => {
   beforeEach(async () => {
@@ -67,6 +69,37 @@ describe('when there is initially one user in db', () => {
       .post('/api/users')
       .send(newUser)
       .expect(400)
+  })
+})
+
+describe('when there are more than one user in db', () => {
+  beforeEach(async () => {
+    await User.deleteMany({})
+
+    const passwordHash1 = await bcrypt.hash('sekret1', 10)
+    const user1 = new User({ username: 'root1', passwordHash1 })
+
+    await user1.save()
+
+    const passwordHash2 = await bcrypt.hash('sekret2', 10)
+    const user2 = new User({ username: 'root2', passwordHash2 })
+
+    await user2.save()
+    const response = await api.post('/api/login').send({ username: 'root1', password: 'sekret1' })
+    // console.log(response.text)
+    token = JSON.parse(response.text).token
+  })
+
+  test('get all users with no blogs', async () => {
+    const currUsers = await helper.usersInDb()
+
+    const response = await api
+      .get('/api/users')
+      .set('Authorization', `Bearer ${token}`)
+
+    assert.strictEqual(JSON.parse(response.text).length, currUsers.length)
+    assert.strictEqual(JSON.parse(response.text)[0].blogs.length, currUsers[0].blogs.length)
+    assert.strictEqual(JSON.parse(response.text)[1].blogs.length, currUsers[1].blogs.length)
   })
 })
 

@@ -44,7 +44,27 @@ const userExtractor = async (request, response, next) => {
     }
 
     request.user = await User.findById(decodedToken.id)
+  } else if(request.method ==='POST' && request.path.includes('users')){
+    next()
   }else if(!authorization){
+    return response.status(401).json({ error: 'no token' })
+  }
+
+
+  next()
+}
+
+const dataFromUserExtractor = async (request, response, next) => {
+  const authorization = request.get('authorization')
+  if (authorization && authorization.startsWith('Bearer ')) {
+    const token = authorization.replace('Bearer ', '')
+    const decodedToken = jwt.verify(token, process.env.SECRET)
+    if (!decodedToken.id) {
+      return response.status(401).json({ error: 'token invalid' })
+    }
+
+    request.user = await User.findById(decodedToken.id)
+  }else if(!authorization && request.method!== 'POST'){
     return response.status(401).json({ error: 'no token' })
   }
 
@@ -56,5 +76,6 @@ module.exports = {
   requestLogger,
   unknownEndpoint,
   errorHandler,
-  userExtractor
+  userExtractor,
+  dataFromUserExtractor
 }

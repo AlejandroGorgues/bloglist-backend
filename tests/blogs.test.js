@@ -13,7 +13,7 @@ let token = ''
 beforeEach(async () => {
   await Blog.deleteMany({})
 
-  const response = await api.post('/api/login').send({ username: 'root', password: 'sekret' })
+  const response = await api.post('/api/login').send({ username: 'root1', password: 'sekret1' })
   token = JSON.parse(response.text).token
 
   const blogObjects = helper.setUserIdOnBlogs(helper.initialBlogs, JSON.parse(response.text).userId)
@@ -95,7 +95,7 @@ test('a valid blog with no token cannot be added ', async () => {
     title: 'Type random22222',
     author: 'Author random4444444',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html',
-    likes: 23,
+    likes: 23
   }
 
   await api
@@ -133,7 +133,7 @@ test('a valid blog with no user cannot be added ', async () => {
     title: 'Type random',
     author: 'Author random',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeRandom.html',
-    likes: 14,
+    likes: 14
   }
 
   await api
@@ -229,6 +229,25 @@ describe('updating of a blog', () => {
     assert(blogToUpdate.likes === blogUpdated.likes)
   })
 })
+
+describe('adding comment', () => {
+  test('succeeds with status code 201 after adding a comment', async () => {
+    const blogsAtStart = await helper.blogsInDb()
+    const blogToUpdate = blogsAtStart[0]
+
+    const blogComment = { comment:'hola' }
+    await api
+      .post(`/api/blogs/${blogToUpdate.id}/comments`)
+      .set('Authorization', `Bearer ${token}`)
+      .send(blogComment)
+      .expect(201)
+
+    const blogsAtEnd = await helper.blogsInDb()
+    const blogUpdated = blogsAtEnd[0]
+    assert(JSON.stringify(blogUpdated.comments) === JSON.stringify([blogComment.comment]))
+  })
+})
+
 
 after(async () => {
   await mongoose.connection.close()
